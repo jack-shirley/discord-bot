@@ -1,7 +1,17 @@
-from os import getenv
-from dotenv import load_dotenv
+from configparser import ConfigParser
 import discord
 from google_images_search import GoogleImagesSearch
+
+def loadConfig():
+    config = ConfigParser()
+    config.read('../config.ini')
+
+    Keys = {'discord_token':config.get('Discord Token', 'TOKEN'),
+            'google_search_api_key':config.get('Google GCP Keys', 'GOOGLE_SEARCH_API_KEY'),
+            'google_cx_id':config.get('Google GCP Keys', 'GOOGLE_CX_ID')}
+
+    return Keys
+    
 
 def getPic(search_query: str, gis) -> str:
     _search_params = {
@@ -14,16 +24,8 @@ def getPic(search_query: str, gis) -> str:
     print(gis.results()[0].url)
     return gis.results()[0].url
 
-def run():
-    """
-    Load environment variables from .env
-
-    TOKEN=
-    GOOGLE_SEARCH_API_KEY=
-    GOOGLE_CX_ID=
-    """
-    load_dotenv()
-    gis = GoogleImagesSearch(getenv('GOOGLE_SEARCH_API_KEY'), getenv('GOOGLE_CX_ID'))
+def run(Keys):
+    gis = GoogleImagesSearch(Keys['google_search_api_key'], Keys['google_cx_id'])
 
     client = discord.Client()
 
@@ -41,7 +43,8 @@ def run():
             img_url = getPic(search_query, gis)
             await message.channel.send(img_url)
 
-    client.run(getenv('TOKEN'))
+    client.run(Keys['discord_token'])
 
 if __name__ == "__main__":
-    run()
+    Keys = loadConfig()
+    run(Keys)
