@@ -1,4 +1,4 @@
-# Discord Google Search
+# Discord Google Image Search
 
 A simple Discord Bot that retrieves the first image from a Google image search query. 
 
